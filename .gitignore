@@ -1,0 +1,5 @@
+.idea/
+out/
+StoreManagementApp.iml
+
+src/model/MySQLConnector.java
