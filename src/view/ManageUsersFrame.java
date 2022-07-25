@@ -31,21 +31,21 @@ import model.User;
 import model.dao.UserDAO;
 
 public class ManageUsersFrame extends JFrame implements ActionListener {
-    private JPanel bottomPanel, inputsPanel, tablePanel;
-    private JLabel usernameLabel, fullNameLabel, passwordLabel, emailLabel, userAccessLevelLabel, instructionLabel;
-    private JTextField usernameTextField, fullNameTextField, passwordTextField, emailTextField;
-    private JComboBox<String> userAccessLevelComboBox;
-    private JButton backButton, createUserButton, updateUserButton, deleteUserButton;
-    private Dimension labelDimension = new Dimension(60, 20), inputBoxDimension = new Dimension(180, 20),
+    private final JPanel bottomPanel, inputsPanel, tablePanel;
+    private final JLabel usernameLabel, fullNameLabel, passwordLabel, emailLabel, userAccessLevelLabel, instructionLabel;
+    private final JTextField usernameTextField, fullNameTextField, passwordTextField, emailTextField;
+    private final JComboBox<String> userAccessLevelComboBox;
+    private final JButton backButton, createUserButton, updateUserButton, deleteUserButton;
+    private final Dimension labelDimension = new Dimension(60, 20), inputBoxDimension = new Dimension(180, 20),
             inputPanelDimension = new Dimension((int)(labelDimension.getWidth() + inputBoxDimension.getWidth()) + 20, 0),
             tableDimension = new Dimension(700, 600), buttonsDimension = new Dimension(105, 25);
-    private Color mainColor = Color.white, inputColor = Color.black;
-    private DefaultTableModel tableModel;
-    private JTable userDataTable;
-    private JScrollPane scrollPane;
+    private final Color mainColor = Color.white, inputColor = Color.black;
+    private final DefaultTableModel tableModel;
+    private final JTable userDataTable;
+    private final JScrollPane scrollPane;
     private Object[][] userData;
-    private String[] tableColumns;
-    private UserDAO userDAO;
+    private final String[] tableColumns;
+    private final UserDAO userDAO;
 
     ManageUsersFrame() throws SQLException{
         userDAO = new UserDAO();
@@ -92,7 +92,7 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
         userAccessLevelLabel.setFont(new Font("Calibri", Font.BOLD, 14));
         inputsPanel.add(userAccessLevelLabel);
 
-        userAccessLevelComboBox = new JComboBox<String>(new String[]{null, "Admin", "Manager", "Attendant"});
+        userAccessLevelComboBox = new JComboBox<>(new String[]{null, "Admin", "Manager", "Attendant"});
         userAccessLevelComboBox.setPreferredSize(inputBoxDimension);
         userAccessLevelComboBox.setFocusable(false);
         inputsPanel.add(userAccessLevelComboBox);
@@ -133,13 +133,13 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
 
         userDataTable.addMouseListener(new MouseAdapter(){
             @Override
-            public void mouseClicked(MouseEvent e){
-                if(e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1){
+            public void mouseClicked(MouseEvent event){
+                if (event.getClickCount() == 2 && event.getButton() == MouseEvent.BUTTON1){
                     usernameTextField.setText((String) userData[userDataTable.getSelectedRow()][0]);
                     fullNameTextField.setText((String) userData[userDataTable.getSelectedRow()][1]);
                     passwordTextField.setText((String) userData[userDataTable.getSelectedRow()][2]);
                     emailTextField.setText((String) userData[userDataTable.getSelectedRow()][3]);
-                    userAccessLevelComboBox.setSelectedItem((String) userData[userDataTable.getSelectedRow()][4]);
+                    userAccessLevelComboBox.setSelectedItem(userData[userDataTable.getSelectedRow()][4]);
                 }
             }
         });
@@ -198,7 +198,7 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
     private boolean isBoxesEmpty() {
         return (fullNameTextField.getText().isBlank() || usernameTextField.getText().isBlank()
                 || passwordTextField.getText().isBlank() || emailTextField.getText().isBlank()
-                || (String) userAccessLevelComboBox.getSelectedItem() == null);
+                || userAccessLevelComboBox.getSelectedItem() == null);
     }
 
     private void emptyBoxes() {
@@ -218,20 +218,20 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
     }
 
     private void dbCreateUser(User user) {
-        if(isBoxesEmpty()) {
+        if (isBoxesEmpty()) {
             JOptionPane.showMessageDialog(null, "You must fill all text fields!",
                     "Input error", JOptionPane.WARNING_MESSAGE);
         } else {
             try {
-                if(userDAO.createUser(user)){
+                if (userDAO.createUser(user)){
                     userData = userDAO.getUsersTableData();
                     JOptionPane.showMessageDialog(null, "This user has been created successfully!",
                             "User created", JOptionPane.INFORMATION_MESSAGE);
                     emptyBoxes();
                     updateTable();
                 }
-            } catch (SQLException e1) {
-                e1.printStackTrace();
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Someting went wrong!",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -239,20 +239,20 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
     }
 
     private void dbUpdateUser(User user) {
-        if(isBoxesEmpty()) {
+        if (isBoxesEmpty()) {
             JOptionPane.showMessageDialog(null, "You must fill all text fields!",
                     "Input error", JOptionPane.WARNING_MESSAGE);
         } else {
             try {
-                if(userDAO.updateUser(user)){
+                if (userDAO.updateUser(user)){
                     userData = userDAO.getUsersTableData();
                     JOptionPane.showMessageDialog(null, "This user has been updated successfully!",
                             "User updated", JOptionPane.INFORMATION_MESSAGE);
                     emptyBoxes();
                     updateTable();
                 }
-            } catch (SQLException e1) {
-                e1.printStackTrace();
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Someting went wrong!",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -260,25 +260,25 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
     }
 
     private void dbDeleteUser() {
-        if(userDataTable.getSelectionModel().isSelectionEmpty()) {
+        if (userDataTable.getSelectionModel().isSelectionEmpty()) {
             JOptionPane.showMessageDialog(null, "You must pick a line from the table!",
                     "Delete error", JOptionPane.WARNING_MESSAGE);
         } else {
             String[] options = {"Yes", "No"};
             int option = JOptionPane.showOptionDialog(null, "Are you sure you want to delete this user?", "Delete user",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-            if(option == 0) {
+            if (option == 0) {
                 try {
                     String selectedUser = (String) userData[userDataTable.getSelectedRow()][0];
-                    if(userDAO.deleteUser(selectedUser)) {
+                    if (userDAO.deleteUser(selectedUser)) {
                         userData = userDAO.getUsersTableData();
                         JOptionPane.showMessageDialog(null, "This user has been deleted successfully!",
                                 "User deleted", JOptionPane.INFORMATION_MESSAGE);
                         emptyBoxes();
                         updateTable();
                     }
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Someting went wrong!",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -287,27 +287,25 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent event) {
         User user = new User(
                 usernameTextField.getText(),
                 fullNameTextField.getText(),
                 passwordTextField.getText(),
                 emailTextField.getText(),
                 (String) userAccessLevelComboBox.getSelectedItem());
-        if(e.getSource().equals(createUserButton)) {
+        if (event.getSource().equals(createUserButton)) {
             dbCreateUser(user);
-        } else if(e.getSource().equals(updateUserButton)) {
+        } else if (event.getSource().equals(updateUserButton)) {
             dbUpdateUser(user);
-        } else if(e.getSource().equals(deleteUserButton)) {
+        } else if (event.getSource().equals(deleteUserButton)) {
             dbDeleteUser();
-        } else if(e.getSource().equals(backButton)) {
+        } else if (event.getSource().equals(backButton)) {
             try {
                 userDAO.close();
                 new MenuFrame();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+            } catch (SQLException | IOException exception) {
+                exception.printStackTrace();
             }
             this.dispose();
         }

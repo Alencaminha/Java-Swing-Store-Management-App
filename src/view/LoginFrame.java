@@ -34,24 +34,23 @@ import model.User;
 import model.dao.UserDAO;
 
 public class LoginFrame extends JFrame implements ActionListener, FocusListener {
-    private JPanel logoPanel, loginPanel, titleLabelPanel, inputsPanel, invisiblePanel;
-    private JLabel logoLabel, titleLabel, usernameLabel, passwordLabel, invisLabel1, invisLabel2;
-    private JTextField usernameTextField;
-    private JPasswordField passwordPasswordField;
-    private String defaultUsernameText = "Enter username...", defaultPasswordText = "Enter password...";
-    private JCheckBox showPasswordCheckBox;
-    private char defaultPasswordChar;
-    private JButton loginButton;
-    private Dimension loginBoxesDimension = new Dimension(350, 25);
-    private Color logoPanelColor = Color.cyan, loginPanelColor = Color.white, presetTextFieldColor = Color.lightGray, inputBorderColor = Color.black;
-    private ImageIcon logoIcon = new ImageIcon("images\\icons\\cash_register_icon.jpg"),
+    private final JPanel logoPanel, loginPanel, titleLabelPanel, inputsPanel, invisiblePanel;
+    private final JLabel logoLabel, titleLabel, usernameLabel, passwordLabel, invisibleLabel1, invisibleLabel2;
+    private final JTextField usernameTextField;
+    private final JPasswordField passwordPasswordField;
+    private final String defaultUsernameText = "Enter username...", defaultPasswordText = "Enter password...";
+    private final JCheckBox showPasswordCheckBox;
+    private final char defaultPasswordChar;
+    private final JButton loginButton;
+    private final Dimension loginBoxesDimension = new Dimension(350, 25);
+    private final Color logoPanelColor = Color.cyan, loginPanelColor = Color.white, presetTextFieldColor = Color.lightGray, inputBorderColor = Color.black;
+    private final ImageIcon logoIcon = new ImageIcon("images\\icons\\cash_register_icon.jpg"),
             usernameIcon = new ImageIcon("images\\icons\\username_icon.png"),
             passwordIcon = new ImageIcon("images\\icons\\password_icon.png"),
             setPasswordVisibleIcon = new ImageIcon("images\\icons\\hidden_eye_icon.png"),
             setPasswordHiddenIcon = new ImageIcon("images\\icons\\open_eye_icon.png");
-    private UserDAO userDAO;
+    private final UserDAO userDAO;
     private User user;
-    private FileWriter fileWriter;
 
     LoginFrame() throws SQLException {
         userDAO = new UserDAO();
@@ -134,9 +133,9 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener 
         /************************************** Password **************************************/
         /************************************ Show Password ************************************/
 
-        invisLabel2 = new JLabel();
-        invisLabel2.setPreferredSize(new Dimension(20, 225));
-        invisiblePanel.add(invisLabel2);
+        invisibleLabel2 = new JLabel();
+        invisibleLabel2.setPreferredSize(new Dimension(20, 225));
+        invisiblePanel.add(invisibleLabel2);
 
         showPasswordCheckBox = new JCheckBox();
         showPasswordCheckBox.setSelected(true);
@@ -151,9 +150,9 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener 
         /************************************ Show Password ************************************/
         /*************************************** Button ***************************************/
 
-        invisLabel1 = new JLabel();
-        invisLabel1.setPreferredSize(new Dimension(20, 20));
-        inputsPanel.add(invisLabel1);
+        invisibleLabel1 = new JLabel();
+        invisibleLabel1.setPreferredSize(new Dimension(20, 20));
+        inputsPanel.add(invisibleLabel1);
 
         loginButton = new JButton("Login");
         loginButton.setPreferredSize(loginBoxesDimension);
@@ -171,7 +170,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener 
     }
 
     private void checkShowPasswordBox() {
-        if(showPasswordCheckBox.isSelected()) {
+        if (showPasswordCheckBox.isSelected()) {
             passwordPasswordField.setEchoChar((char)0);
             showPasswordCheckBox.setIcon(new ImageIcon(setPasswordVisibleIcon.getImage().getScaledInstance(25, 20, Image.SCALE_SMOOTH)));
         } else {
@@ -183,21 +182,19 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener 
     private boolean loginAuthentication() {
         try {
             user = userDAO.readUser(usernameTextField.getText());
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
         }
 
-        if(user != null) { // A user was found through the inserted username
-            if(user.getPassword().equals(String.valueOf(passwordPasswordField.getPassword()))) {
-                return true;
-            }
+        if (user != null) { // A user was found through the inserted username
+            return user.getPassword().equals(String.valueOf(passwordPasswordField.getPassword()));
         }
         return false;
     }
 
-    private void systemLogin() throws SQLException, IOException {
-        if(loginAuthentication()) {
-            fileWriter = new FileWriter("app_local_settings.txt");
+    private void loginAuthorization() throws SQLException, IOException {
+        if (loginAuthentication()) {
+            FileWriter fileWriter = new FileWriter("app_local_settings.txt");
             fileWriter.write("currentlyLoggedUser:" + user.getUsername());
             fileWriter.close();
             userDAO.close();
@@ -215,28 +212,26 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener 
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        if(event.getSource().equals(showPasswordCheckBox)) {
+        if (event.getSource().equals(showPasswordCheckBox)) {
             checkShowPasswordBox();
-        } else if(event.getSource().equals(loginButton)) {
+        } else if (event.getSource().equals(loginButton)) {
             try {
-                systemLogin();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                loginAuthorization();
+            } catch (SQLException | IOException exception) {
+                exception.printStackTrace();
             }
         }
     }
 
     @Override
     public void focusGained(FocusEvent event) {
-        if(event.getSource().equals(usernameTextField)) {
-            if(usernameTextField.getText().equals(defaultUsernameText)) {
+        if (event.getSource().equals(usernameTextField)) {
+            if (usernameTextField.getText().equals(defaultUsernameText)) {
                 usernameTextField.setText(null);
                 usernameTextField.setForeground(inputBorderColor);
             }
-        } else if(event.getSource().equals(passwordPasswordField)) {
-            if(String.valueOf(passwordPasswordField.getPassword()).equals(defaultPasswordText)) {
+        } else if (event.getSource().equals(passwordPasswordField)) {
+            if (String.valueOf(passwordPasswordField.getPassword()).equals(defaultPasswordText)) {
                 passwordPasswordField.setText(null);
                 passwordPasswordField.setForeground(inputBorderColor);
                 showPasswordCheckBox.setSelected(false);
@@ -247,13 +242,13 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener 
 
     @Override
     public void focusLost(FocusEvent event) {
-        if(event.getSource().equals(usernameTextField)) {
-            if(usernameTextField.getText().isBlank()) {
+        if (event.getSource().equals(usernameTextField)) {
+            if (usernameTextField.getText().isBlank()) {
                 usernameTextField.setText(defaultUsernameText);
                 usernameTextField.setForeground(presetTextFieldColor);
             }
-        } else if(event.getSource().equals(passwordPasswordField)) {
-            if(String.valueOf(passwordPasswordField.getPassword()).isBlank()) {
+        } else if (event.getSource().equals(passwordPasswordField)) {
+            if (String.valueOf(passwordPasswordField.getPassword()).isBlank()) {
                 passwordPasswordField.setText(defaultPasswordText);
                 passwordPasswordField.setForeground(presetTextFieldColor);
                 showPasswordCheckBox.setSelected(true);
@@ -265,17 +260,17 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener 
     MouseAdapter mouseAdapter = new MouseAdapter() {
         @Override
         public void mouseEntered(MouseEvent event) {
-            if(event.getSource().equals(loginButton)) {
+            if (event.getSource().equals(loginButton)) {
                 loginButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            } else if(event.getSource().equals(showPasswordCheckBox)) {
+            } else if (event.getSource().equals(showPasswordCheckBox)) {
                 showPasswordCheckBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
         }
         @Override
         public void mouseExited(MouseEvent event) {
-            if(event.getSource().equals(loginButton)) {
+            if (event.getSource().equals(loginButton)) {
                 loginButton.setCursor(Cursor.getDefaultCursor());
-            } else if(event.getSource().equals(showPasswordCheckBox)) {
+            } else if (event.getSource().equals(showPasswordCheckBox)) {
                 showPasswordCheckBox.setCursor(Cursor.getDefaultCursor());
             }
         }
@@ -284,13 +279,11 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener 
     KeyAdapter keyAdapter = new KeyAdapter() {
         @Override
         public void keyPressed(KeyEvent event) {
-            if(event.getKeyCode() == 10) { // Keyboard Enter button => Equivalent to clicking the screen login button
+            if (event.getKeyCode() == 10) { // Keyboard Enter button => Equivalent to clicking the screen login button
                 try {
-                    systemLogin();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                    loginAuthorization();
+                } catch (SQLException | IOException exception) {
+                    exception.printStackTrace();
                 }
             }
         }

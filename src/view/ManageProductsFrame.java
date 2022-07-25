@@ -31,21 +31,21 @@ import model.Product;
 import model.dao.ProductDAO;
 
 public class ManageProductsFrame extends JFrame implements ActionListener {
-    private JPanel bottomPanel, inputsPanel, tablePanel;
-    private JLabel idLabel, nameLabel, priceLabel, categoryLabel, instructionLabel;
-    private JTextField idTextField, nameTextField, priceTextField;
-    private JComboBox<String> categoryComboBox;
-    private JButton backButton, createProductButton, updateProductButton, deleteProductButton;
-    private Dimension labelDimension = new Dimension(85, 20), inputBoxDimension = new Dimension(180, 20),
+    private final JPanel bottomPanel, inputsPanel, tablePanel;
+    private final JLabel idLabel, nameLabel, priceLabel, categoryLabel, instructionLabel;
+    private final JTextField idTextField, nameTextField, priceTextField;
+    private final JComboBox<String> categoryComboBox;
+    private final JButton backButton, createProductButton, updateProductButton, deleteProductButton;
+    private final Dimension labelDimension = new Dimension(85, 20), inputBoxDimension = new Dimension(180, 20),
             inputPanelDimension = new Dimension((int)(labelDimension.getWidth() + inputBoxDimension.getWidth()) + 20, 0),
             tableDimension = new Dimension(690, 600), buttonsDimension = new Dimension(105, 25);
-    private Color mainColor = Color.white, inputColor = Color.black;
-    private DefaultTableModel tableModel;
-    private JTable productDataTable;
-    private JScrollPane scrollPane;
+    private final Color mainColor = Color.white, inputColor = Color.black;
+    private final DefaultTableModel tableModel;
+    private final JTable productDataTable;
+    private final JScrollPane scrollPane;
     private Object[][] productData;
-    private String[] tableColumns, categoriesArray;
-    private ProductDAO productDAO;
+    private final String[] tableColumns, categoriesArray;
+    private final ProductDAO productDAO;
 
     ManageProductsFrame() throws SQLException{
         productDAO = new ProductDAO();
@@ -90,7 +90,7 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
 
         categoriesArray = new String[]{null, "Burger", "Drink"};
 
-        categoryComboBox = new JComboBox<String>(categoriesArray);
+        categoryComboBox = new JComboBox<>(categoriesArray);
         categoryComboBox.setPreferredSize(inputBoxDimension);
         categoryComboBox.setFocusable(false);
         inputsPanel.add(categoryComboBox);
@@ -130,11 +130,11 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
 
         productDataTable.addMouseListener(new MouseAdapter(){
             @Override
-            public void mouseClicked(MouseEvent e){
-                if(e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1){
+            public void mouseClicked(MouseEvent event){
+                if (event.getClickCount() == 2 && event.getButton() == MouseEvent.BUTTON1){
                     idTextField.setText((String) productData[productDataTable.getSelectedRow()][0]);
                     nameTextField.setText((String) productData[productDataTable.getSelectedRow()][1]);
-                    categoryComboBox.setSelectedItem((String) productData[productDataTable.getSelectedRow()][2]);
+                    categoryComboBox.setSelectedItem(productData[productDataTable.getSelectedRow()][2]);
                     priceTextField.setText((String) productData[productDataTable.getSelectedRow()][3]);
                 }
             }
@@ -212,20 +212,20 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
     }
 
     private void dbCreateProduct(Product product) {
-        if(isBoxesEmpty()) {
+        if (isBoxesEmpty()) {
             JOptionPane.showMessageDialog(null, "You must fill all text fields!",
                     "Input error", JOptionPane.WARNING_MESSAGE);
         } else {
             try {
-                if(productDAO.createProduct(product)){
+                if (productDAO.createProduct(product)){
                     productData = productDAO.getProductsTableData();
                     JOptionPane.showMessageDialog(null, "This product has been created successfully!",
                             "Product created", JOptionPane.INFORMATION_MESSAGE);
                     emptyBoxes();
                     updateTable();
                 }
-            } catch (SQLException e1) {
-                e1.printStackTrace();
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Someting went wrong!",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -233,20 +233,20 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
     }
 
     private void dbUpdateProduct(Product product) {
-        if(isBoxesEmpty()) {
+        if (isBoxesEmpty()) {
             JOptionPane.showMessageDialog(null, "You must fill all text fields!",
                     "Input error", JOptionPane.WARNING_MESSAGE);
         } else {
             try {
-                if(productDAO.updateProduct(product)){
+                if (productDAO.updateProduct(product)){
                     productData = productDAO.getProductsTableData();
                     JOptionPane.showMessageDialog(null, "This product has been updated successfully!",
                             "Product updated", JOptionPane.INFORMATION_MESSAGE);
                     emptyBoxes();
                     updateTable();
                 }
-            } catch (SQLException e1) {
-                e1.printStackTrace();
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Someting went wrong!",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -254,25 +254,25 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
     }
 
     private void dbDeleteProduct() {
-        if(productDataTable.getSelectionModel().isSelectionEmpty()) {
+        if (productDataTable.getSelectionModel().isSelectionEmpty()) {
             JOptionPane.showMessageDialog(null, "You must pick a line from the table!",
                     "Delete error", JOptionPane.WARNING_MESSAGE);
         } else {
             String[] options = {"Yes", "No"};
             int option = JOptionPane.showOptionDialog(null, "Are you sure you want to delete this product?", "Delete product",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-            if(option == 0) {
+            if (option == 0) {
                 try {
                     int selectedProduct = Integer.parseInt((String) productData[productDataTable.getSelectedRow()][0]);
-                    if(productDAO.deleteProduct(selectedProduct)) {
+                    if (productDAO.deleteProduct(selectedProduct)) {
                         productData = productDAO.getProductsTableData();
                         JOptionPane.showMessageDialog(null, "This product has been deleted successfully!",
                                 "Product deleted", JOptionPane.INFORMATION_MESSAGE);
                         emptyBoxes();
                         updateTable();
                     }
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Someting went wrong!",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -281,26 +281,24 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent event) {
         Product product = new Product(
                 idTextField.getText().isBlank() ? 0 : Integer.parseInt(idTextField.getText()),
                 nameTextField.getText(),
                 (String) categoryComboBox.getSelectedItem(),
                 priceTextField.getText());
-        if(e.getSource().equals(createProductButton)) {
+        if (event.getSource().equals(createProductButton)) {
             dbCreateProduct(product);
-        } else if(e.getSource().equals(updateProductButton)) {
+        } else if (event.getSource().equals(updateProductButton)) {
             dbUpdateProduct(product);
-        } else if(e.getSource().equals(deleteProductButton)) {
+        } else if (event.getSource().equals(deleteProductButton)) {
             dbDeleteProduct();
-        } else if(e.getSource().equals(backButton)) {
+        } else if (event.getSource().equals(backButton)) {
             try {
                 productDAO.close();
                 new MenuFrame();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+            } catch (SQLException | IOException exception) {
+                exception.printStackTrace();
             }
             this.dispose();
         }

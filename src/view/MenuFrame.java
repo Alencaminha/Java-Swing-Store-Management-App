@@ -32,15 +32,15 @@ import model.User;
 import model.dao.UserDAO;
 
 public class MenuFrame extends JFrame implements ActionListener {
-    private JPanel mainPanel, logoPanel;
-    private JLabel iconLabel, helloLabel, logoLabel;
-    private JLabel newSaleLabel, searchSaleLabel, manageUsersLabel, manageProductsLabel, settingsLabel, logoutLabel;
-    private String deniedUserAccessLevel = "Attendant", loggedUserName = "Unknown user", loggedUserAccessLevel = deniedUserAccessLevel, fileData = "";
-    private JButton newSaleButton, searchSaleButton, manageUsersButton, manageProductsButton, settingsButton, logoutButton;
-    private Dimension buttonsDimension = new Dimension(200, 25), helloDimension = new Dimension(220, 25),
+    private final JPanel mainPanel, logoPanel;
+    private final JLabel iconLabel, helloLabel, logoLabel;
+    private final String deniedUserAccessLevel = "Attendant";
+    private String loggedUserName = "Unknown user", loggedUserAccessLevel = deniedUserAccessLevel, fileData;
+    private final JButton newSaleButton, searchSaleButton, manageUsersButton, manageProductsButton, settingsButton, logoutButton;
+    private final Dimension buttonsDimension = new Dimension(200, 25), helloDimension = new Dimension(220, 25),
             mainPanelDimension = new Dimension((int) buttonsDimension.getWidth() + 40, 0);
-    private Color mainPanelColor = Color.white, logoPanelColor = Color.cyan, buttonColor = Color.black;
-    private ImageIcon helloIcon = new ImageIcon("images\\icons\\username_icon.png"),
+    private final Color mainPanelColor = Color.white, logoPanelColor = Color.cyan, buttonColor = Color.black;
+    private final ImageIcon helloIcon = new ImageIcon("images\\icons\\username_icon.png"),
             logoIcon = new ImageIcon("images\\icons\\cash_register_icon.jpg"),
             newSaleIcon = new ImageIcon("images\\icons\\shopping_cart_icon.png"),
             searchSaleIcon = new ImageIcon("images\\icons\\search_icon.png"),
@@ -48,25 +48,27 @@ public class MenuFrame extends JFrame implements ActionListener {
             manageProductsIcon = new ImageIcon("images\\icons\\product_icon.png"),
             settingsIcon = new ImageIcon("images\\icons\\settings_icon.png"),
             logoutIcon = new ImageIcon("images\\icons\\logout_icon.png");
-    private User currentlyLoggedUser;
-    private UserDAO userDAO;
-    private File settingsFile;
+    private final User currentlyLoggedUser;
+    private final UserDAO userDAO;
+    private final File settingsFile;
     private FileReader fileReader;
-    private HashMap<String, String> settingsMap = new HashMap<String, String>();
+    private final HashMap<String, String> settingsMap = new HashMap<>();
 
     MenuFrame() throws SQLException, IOException {
         /*************************************** Setup ****************************************/
         userDAO = new UserDAO();
         fileData = "";
+        StringBuilder stringBuilder = new StringBuilder(fileData);
         settingsFile = new File("app_local_settings.txt");
-        if(settingsFile.exists()) {
-            if(settingsFile.isFile()) {
+        if (settingsFile.exists()) {
+            if (settingsFile.isFile()) {
                 fileReader = new FileReader(settingsFile);
                 int data = fileReader.read();
                 while(data != -1) {
-                    fileData += (char)data;
+                    stringBuilder.append((char)data);
                     data = fileReader.read();
                 }
+                fileData = stringBuilder.toString();
                 fileReader.close();
             }
         }
@@ -76,7 +78,7 @@ public class MenuFrame extends JFrame implements ActionListener {
             settingsMap.put(partArray[0].trim(), partArray[1].trim());
         }
         currentlyLoggedUser = userDAO.readUser(settingsMap.get("currentlyLoggedUser"));
-        if(currentlyLoggedUser != null) {
+        if (currentlyLoggedUser != null) {
             loggedUserName = currentlyLoggedUser.getFullName();
             loggedUserAccessLevel = currentlyLoggedUser.getAccessLevel();
         }
@@ -122,30 +124,30 @@ public class MenuFrame extends JFrame implements ActionListener {
         /************************************* Buttons **************************************/
 
         newSaleButton = new JButton("New sale");
-        setLine(newSaleLabel, newSaleIcon, newSaleButton);
+        setLine(newSaleIcon, newSaleButton);
 
         searchSaleButton = new JButton("Search sale");
-        setLine(searchSaleLabel, searchSaleIcon, searchSaleButton);
+        setLine(searchSaleIcon, searchSaleButton);
 
         manageUsersButton = new JButton("Manage users");
-        setLine(manageUsersLabel, manageUsersIcon, manageUsersButton);
+        setLine(manageUsersIcon, manageUsersButton);
 
         manageProductsButton = new JButton("Manage products");
-        setLine(manageProductsLabel, manageProductsIcon, manageProductsButton);
+        setLine(manageProductsIcon, manageProductsButton);
 
         settingsButton = new JButton("Settings");
-        setLine(settingsLabel, settingsIcon, settingsButton);
+        setLine(settingsIcon, settingsButton);
 
         logoutButton = new JButton("Logout");
-        setLine(logoutLabel, logoutIcon, logoutButton);
+        setLine(logoutIcon, logoutButton);
 
         /************************************* Buttons **************************************/
 
         this.setVisible(true);
     }
 
-    private void setLine(JLabel label, ImageIcon icon, JButton button) {
-        label = new JLabel();
+    private void setLine(ImageIcon icon, JButton button) {
+        JLabel label = new JLabel();
         label.setIcon(new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
         mainPanel.add(label);
 
@@ -170,51 +172,51 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        if(event.getSource().equals(newSaleButton)) {
+        if (event.getSource().equals(newSaleButton)) {
             try {
                 new NewSaleFrame();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
             }
             this.dispose();
-        } else if(event.getSource().equals(searchSaleButton)) {
+        } else if (event.getSource().equals(searchSaleButton)) {
             new SearchSaleFrame();
             this.dispose();
-        } else if(event.getSource().equals(manageUsersButton)) {
-            if(loggedUserAccessLevel.equals(deniedUserAccessLevel)) {
+        } else if (event.getSource().equals(manageUsersButton)) {
+            if (loggedUserAccessLevel.equals(deniedUserAccessLevel)) {
                 JOptionPane.showMessageDialog(null, "You do not have access to this page!",
                         "Invalid access", JOptionPane.WARNING_MESSAGE);
             } else {
                 try {
                     new ManageUsersFrame();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
                 }
                 this.dispose();
             }
-        } else if(event.getSource().equals(manageProductsButton)) {
-            if(loggedUserAccessLevel.equals(deniedUserAccessLevel)) {
+        } else if (event.getSource().equals(manageProductsButton)) {
+            if (loggedUserAccessLevel.equals(deniedUserAccessLevel)) {
                 JOptionPane.showMessageDialog(null, "You do not have access to this page!",
                         "Invalid access", JOptionPane.WARNING_MESSAGE);
             } else {
                 try {
                     new ManageProductsFrame();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
                 }
                 this.dispose();
             }
-        } else if(event.getSource().equals(settingsButton)) {
-            // TODO Add the settings funcionality.
-        } else if(event.getSource().equals(logoutButton)) {
+        } else if (event.getSource().equals(settingsButton)) {
+            // TODO Add the settings functionality.
+        } else if (event.getSource().equals(logoutButton)) {
             String[] options = {"Yes", "No"};
             int option = JOptionPane.showOptionDialog(null, "Are you sure you want to logout?", "Exit",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-            if(option == 0) {
+            if (option == 0) {
                 try {
                     new LoginFrame();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
                 }
                 this.dispose();
             }
