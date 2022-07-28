@@ -12,8 +12,9 @@ The project is still a work in progress:
 - [x] Create the login page with authentication
 - [x] Create the menu page
 - [x] Create the manager's pages
-- [ ] Create the 'new sale' page (work in progress)
+- [x] Create the 'new sale' page
 - [ ] Create the 'search sale' page (work in progress)
+- [ ] Create settings int the menu for the user to tweak
 
 ---
 
@@ -30,3 +31,6 @@ The project is still a work in progress:
 
 ### Manage products
 ![Manage products page screenshot](images/screenshots/manage_products_page_screenshot.PNG)
+
+### New sale
+![New sale page screenshot](images/screenshots/new_sale_page_screenshot.PNG)

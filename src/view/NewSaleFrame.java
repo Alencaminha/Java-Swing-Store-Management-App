@@ -4,31 +4,40 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
 import model.*;
 import model.dao.*;
 
 public class NewSaleFrame extends JFrame implements ActionListener {
-    private JPanel bottomPanel, inputsPanel, tablesPanel;
-    private JLabel sellerUsernameLabel, totalCostLabel, instructionLabel;
-    private JTextField totalCostTextField;
-    private JComboBox<String> sellerUsernameComboBox;
-    private JButton backButton, addItemButton, removeItemButton, saveSaleButton;
-    private Dimension labelDimension = new Dimension(65, 20), inputBoxDimension = new Dimension(180, 20),
+    private final JPanel bottomPanel, inputsPanel, tablesPanel;
+    private final JLabel sellerUsernameLabel, totalCostLabel, instructionLabel;
+    private final JTextField totalCostTextField;
+    private final JComboBox<String> sellerUsernameComboBox;
+    private final JButton backButton, addItemButton, removeItemButton, saveSaleButton;
+    private final Dimension labelDimension = new Dimension(65, 20), inputBoxDimension = new Dimension(180, 20),
             inputPanelDimension = new Dimension((int)(labelDimension.getWidth() + inputBoxDimension.getWidth()) + 20, 0),
             tableDimension = new Dimension(0, 310), buttonsDimension = new Dimension(100, 25);
-    private Color mainColor = Color.white, inputColor = Color.black;
-    private DefaultTableModel saleTableModel, productsTableModel;
-    private JTable saleTable, productsTable;
-    private JScrollPane saleScrollPane, productsScrollPane;
-    private Object[][] saleData, productsData;
-    private String[] saleTableColumns, productsTableColumns, attendantsArray;
-    private ArrayList<String> saleItems;
-    private SaleDAO saleDAO;
-    private ProductDAO productDAO;
-    private UserDAO userDAO;
+    private final Color mainColor = Color.white, inputColor = Color.black;
+    private final DefaultTableModel saleTableModel, productsTableModel;
+    private final JTable saleTable, productsTable;
+    private final JScrollPane saleScrollPane, productsScrollPane;
+    private Object[][] saleData;
+    private final Object[][] productsData;
+    private final String[] attendantsArray, tableColumns = new String[]{"Id", "Name", "Category", "Price"};
+    private final List<String> itemsList = new ArrayList<>();
+    private int tableRowsNumber = 0;
+    private final int tableColumnsNumber = 4;
+    private Float totalCost = 0.0f;
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private LocalDateTime now;
+    private final SaleDAO saleDAO;
+    private final ProductDAO productDAO;
+    private final UserDAO userDAO;
 
     NewSaleFrame() throws SQLException{
         saleDAO = new SaleDAO();
@@ -39,7 +48,7 @@ public class NewSaleFrame extends JFrame implements ActionListener {
 
         this.setTitle("New Sale");
         this.setSize(1000, 720);
-        this.setResizable(true);
+        this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setLayout(new BorderLayout());
@@ -63,7 +72,7 @@ public class NewSaleFrame extends JFrame implements ActionListener {
 
         attendantsArray = userDAO.getAllAttendants();
 
-        sellerUsernameComboBox = new JComboBox<String>(attendantsArray);
+        sellerUsernameComboBox = new JComboBox<>(attendantsArray);
         sellerUsernameComboBox.setPreferredSize(inputBoxDimension);
         sellerUsernameComboBox.setFocusable(false);
         inputsPanel.add(sellerUsernameComboBox);
@@ -73,7 +82,7 @@ public class NewSaleFrame extends JFrame implements ActionListener {
         totalCostLabel.setFont(new Font("Calibri", Font.BOLD, 14));
         inputsPanel.add(totalCostLabel);
 
-        totalCostTextField = new JTextField();
+        totalCostTextField = new JTextField(String.format("$ %.2f", totalCost));
         totalCostTextField.setPreferredSize(inputBoxDimension);
         totalCostTextField.setForeground(inputColor);
         totalCostTextField.setBorder(BorderFactory.createLineBorder(inputColor));
@@ -82,7 +91,7 @@ public class NewSaleFrame extends JFrame implements ActionListener {
         /****************************** Input ******************************/
         /***************************** Buttons *****************************/
 
-        instructionLabel = new JLabel("<html>Select from table<br>to add or remove</html>");
+        instructionLabel = new JLabel("<html>Select from tables<br>to add or remove</html>");
         instructionLabel.setFont(new Font("Calibri", Font.BOLD, 12));
         instructionLabel.setPreferredSize(buttonsDimension);
         inputsPanel.add(instructionLabel);
@@ -103,8 +112,7 @@ public class NewSaleFrame extends JFrame implements ActionListener {
         /************************** Products Table **************************/
 
         productsData = productDAO.getProductsTableData();
-        productsTableColumns = new String[]{"ID", "Name", "Category", "Price"};
-        productsTableModel = new DefaultTableModel(productsData, productsTableColumns);
+        productsTableModel = new DefaultTableModel(productsData, tableColumns);
 
         productsTable = new JTable(productsTableModel) {
             @Override
@@ -113,6 +121,13 @@ public class NewSaleFrame extends JFrame implements ActionListener {
             }
         };
 
+        productsTable.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent event) {
+                productsTable.clearSelection();
+            }
+        });
+
         productsScrollPane = new JScrollPane(productsTable);
         productsScrollPane.setPreferredSize(tableDimension);
         tablesPanel.add(productsScrollPane, BorderLayout.NORTH);
@@ -120,17 +135,20 @@ public class NewSaleFrame extends JFrame implements ActionListener {
         /************************** Products Table **************************/
         /**************************** Sale Table ****************************/
 
-        saleItems = new ArrayList<String>();
-        saleData = getSaleItems();
-        saleTableColumns = new String[]{"Name", "Category", "Price"};
-        saleTableModel = new DefaultTableModel(saleData, saleTableColumns);
-
+        saleTableModel = new DefaultTableModel(null, tableColumns);
         saleTable = new JTable(saleTableModel) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
+
+        saleTable.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent event) {
+                saleTable.clearSelection();
+            }
+        });
 
         saleScrollPane = new JScrollPane(saleTable);
         saleScrollPane.setPreferredSize(tableDimension);
@@ -153,7 +171,7 @@ public class NewSaleFrame extends JFrame implements ActionListener {
         /****************************** Frame ******************************/
     }
 
-    private void setButtonDesign(JButton button){
+    private void setButtonDesign(JButton button) {
         button.setPreferredSize(buttonsDimension);
         button.setFocusable(false);
         button.setBorder(BorderFactory.createLineBorder(inputColor));
@@ -176,34 +194,106 @@ public class NewSaleFrame extends JFrame implements ActionListener {
         int currentRowCount = saleTableModel.getRowCount();
         saleTableModel.setRowCount(0);
         saleTableModel.setRowCount(currentRowCount);
-        saleTableModel.setDataVector(saleData, saleTableColumns);
+        saleTableModel.setDataVector(saleData, tableColumns);
     }
 
     private String[][] getSaleItems(){
-        int rows = 1, columns = 2;
+        int aux = 0;
 
-
-
-        String[][] items = new String[rows][columns];
-        // Populate items
-
+        String[][] items = new String[tableRowsNumber][tableColumnsNumber];
+        for(int i = 0; i < tableRowsNumber; i++) {
+            for(int j = 0; j < tableColumnsNumber; j++) {
+                items[i][j] = itemsList.get(aux++);
+            }
+        }
         return items;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource().equals(backButton)) {
+    private void addItem() {
+        if (productsTable.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(null, "You must pick a line from the products table!",
+                    "Selection error", JOptionPane.WARNING_MESSAGE);
+        } else {
+            tableRowsNumber++;
+
+            totalCost += Float.parseFloat(((String) productsData[productsTable
+                    .getSelectedRow()][3]).replaceAll(",", "."));
+            totalCostTextField.setText(String.format("$ %.2f", totalCost));
+
+            itemsList.add((String) productsData[productsTable.getSelectedRow()][0]);
+            itemsList.add((String) productsData[productsTable.getSelectedRow()][1]);
+            itemsList.add((String) productsData[productsTable.getSelectedRow()][2]);
+            itemsList.add((String) productsData[productsTable.getSelectedRow()][3]);
+
+            saleData = getSaleItems();
+            updateTable();
+        }
+    }
+
+    private void removeItem() {
+        if (saleTable.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(null, "You must pick a line from the sale table!",
+                    "Selection error", JOptionPane.WARNING_MESSAGE);
+        } else {
+            tableRowsNumber--;
+
+            totalCost -= Float.parseFloat(((String) saleData[saleTable
+                    .getSelectedRow()][3]).replaceAll(",", "."));
+            totalCostTextField.setText(String.format("$ %.2f", totalCost));
+
+            itemsList.remove((String) saleData[saleTable.getSelectedRow()][0]);
+            itemsList.remove((String) saleData[saleTable.getSelectedRow()][1]);
+            itemsList.remove((String) saleData[saleTable.getSelectedRow()][2]);
+            itemsList.remove((String) saleData[saleTable.getSelectedRow()][3]);
+
+            saleData = getSaleItems();
+            updateTable();
+        }
+    }
+
+    private void saveSale() {
+        if (sellerUsernameComboBox.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(null, "You must pick a user from the attendant box!",
+                    "Selection error", JOptionPane.WARNING_MESSAGE);
+        } else {
+            now = LocalDateTime.now();
+            Sale sale = new Sale(0,
+                    totalCost,
+                    (String) (sellerUsernameComboBox.getSelectedItem()),
+                    dateTimeFormatter.format(now));
             try {
-                saleDAO.close();
-                productDAO.close();
-                userDAO.close();
-                new MenuFrame();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                if (saleDAO.createSale(sale)) {
+                    JOptionPane.showMessageDialog(null, "This sale has been saved successfully!");
+                    backToMenu();
+                }
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
             }
-            this.dispose();
+        }
+    }
+
+    private void backToMenu(){
+        try {
+            saleDAO.close();
+            productDAO.close();
+            userDAO.close();
+            new MenuFrame();
+        } catch (SQLException | IOException exception) {
+            exception.printStackTrace();
+        }
+        this.dispose();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent event) {
+        if (event.getSource().equals(addItemButton)) {
+            addItem();
+        } else if (event.getSource().equals(removeItemButton)) {
+            removeItem();
+        } else if (event.getSource().equals(saveSaleButton)) {
+            saveSale();
+        } else if (event.getSource().equals(backButton)) {
+            backToMenu();
         }
     }
 }

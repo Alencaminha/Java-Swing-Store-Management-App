@@ -22,7 +22,7 @@ CREATE TABLE Sale(
     id INTEGER AUTO_INCREMENT,
     total_cost FLOAT NOT NULL,
     seller_username VARCHAR(255),
-    date DATE NOT NULL,
+    date DATETIME NOT NULL,
     PRIMARY KEY(id)
 );
 
