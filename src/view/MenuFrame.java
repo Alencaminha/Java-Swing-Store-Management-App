@@ -124,29 +124,29 @@ public class MenuFrame extends JFrame implements ActionListener {
         /************************************* Buttons **************************************/
 
         newSaleButton = new JButton("New sale");
-        setLine(newSaleIcon, newSaleButton);
+        setLineDesign(newSaleIcon, newSaleButton);
 
         searchSaleButton = new JButton("Search sale");
-        setLine(searchSaleIcon, searchSaleButton);
+        setLineDesign(searchSaleIcon, searchSaleButton);
 
         manageUsersButton = new JButton("Manage users");
-        setLine(manageUsersIcon, manageUsersButton);
+        setLineDesign(manageUsersIcon, manageUsersButton);
 
         manageProductsButton = new JButton("Manage products");
-        setLine(manageProductsIcon, manageProductsButton);
+        setLineDesign(manageProductsIcon, manageProductsButton);
 
         settingsButton = new JButton("Settings");
-        setLine(settingsIcon, settingsButton);
+        setLineDesign(settingsIcon, settingsButton);
 
         logoutButton = new JButton("Logout");
-        setLine(logoutIcon, logoutButton);
+        setLineDesign(logoutIcon, logoutButton);
 
         /************************************* Buttons **************************************/
 
         this.setVisible(true);
     }
 
-    private void setLine(ImageIcon icon, JButton button) {
+    private void setLineDesign(ImageIcon icon, JButton button) {
         JLabel label = new JLabel();
         label.setIcon(new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
         mainPanel.add(label);
@@ -172,54 +172,42 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        if (event.getSource().equals(newSaleButton)) {
-            try {
+        try {
+            if (event.getSource().equals(newSaleButton)) {
                 new NewSaleFrame();
-            } catch (SQLException sqlException) {
-                sqlException.printStackTrace();
-            }
-            this.dispose();
-        } else if (event.getSource().equals(searchSaleButton)) {
-            new SearchSaleFrame();
-            this.dispose();
-        } else if (event.getSource().equals(manageUsersButton)) {
-            if (loggedUserAccessLevel.equals(deniedUserAccessLevel)) {
-                JOptionPane.showMessageDialog(null, "You do not have access to this page!",
-                        "Invalid access", JOptionPane.WARNING_MESSAGE);
-            } else {
-                try {
+                this.dispose();
+            } else if (event.getSource().equals(searchSaleButton)) {
+                new SearchSaleFrame();
+                this.dispose();
+            } else if (event.getSource().equals(manageUsersButton)) {
+                if (loggedUserAccessLevel.equals(deniedUserAccessLevel)) {
+                    JOptionPane.showMessageDialog(null, "You do not have access to this page!",
+                            "Invalid access", JOptionPane.WARNING_MESSAGE);
+                } else {
                     new ManageUsersFrame();
-                } catch (SQLException sqlException) {
-                    sqlException.printStackTrace();
+                    this.dispose();
                 }
-                this.dispose();
-            }
-        } else if (event.getSource().equals(manageProductsButton)) {
-            if (loggedUserAccessLevel.equals(deniedUserAccessLevel)) {
-                JOptionPane.showMessageDialog(null, "You do not have access to this page!",
-                        "Invalid access", JOptionPane.WARNING_MESSAGE);
-            } else {
-                try {
+            } else if (event.getSource().equals(manageProductsButton)) {
+                if (loggedUserAccessLevel.equals(deniedUserAccessLevel)) {
+                    JOptionPane.showMessageDialog(null, "You do not have access to this page!",
+                            "Invalid access", JOptionPane.WARNING_MESSAGE);
+                } else {
                     new ManageProductsFrame();
-                } catch (SQLException sqlException) {
-                    sqlException.printStackTrace();
+                    this.dispose();
                 }
-                this.dispose();
-            }
-        } else if (event.getSource().equals(settingsButton)) {
-            // TODO Add the settings functionality.
-        } else if (event.getSource().equals(logoutButton)) {
-            String[] options = {"Yes", "No"};
-            int option = JOptionPane.showOptionDialog(null, "Are you sure you want to logout?", "Exit",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-            if (option == 0) {
-                try {
+            } else if (event.getSource().equals(settingsButton)) {
+                // TODO Add the settings functionality.
+            } else if (event.getSource().equals(logoutButton)) {
+                String[] options = {"Yes", "No"};
+                int option = JOptionPane.showOptionDialog(null, "Are you sure you want to logout?", "Exit",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+                if (option == 0) {
                     new LoginFrame();
-                } catch (SQLException sqlException) {
-                    sqlException.printStackTrace();
+                    this.dispose();
                 }
-                this.dispose();
             }
+        } catch (SQLException sqlException){
+            sqlException.printStackTrace();
         }
     }
 }
