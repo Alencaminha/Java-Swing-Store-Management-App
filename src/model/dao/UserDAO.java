@@ -69,7 +69,7 @@ public class UserDAO {
         return(insertedLines != 0);
     }
 
-    public String[] getAllAttendants() throws SQLException{
+    public String[] readAllAttendants() throws SQLException{
         int rows = 0;
         resultCountRows = connection.prepareStatement("SELECT COUNT(*) FROM User WHERE access_level = 'Attendant'").executeQuery();
         if(resultCountRows.next()) rows = resultCountRows.getInt(1);
@@ -91,7 +91,7 @@ public class UserDAO {
         return attendants;
     }
 
-    public String[][] getUsersTableData() throws SQLException {
+    public String[][] readUsersTableData() throws SQLException {
         int rows = 0, columns = 5, aux = 0;
         resultCountRows = connection.prepareStatement("SELECT COUNT(*) FROM User").executeQuery();
         if(resultCountRows.next()) rows = resultCountRows.getInt(1);

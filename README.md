@@ -3,7 +3,11 @@
 
 ---
 
-The aim for this project was for me to have my first experience with Java by using the Swing GUI framework and MySQL database.
+The aim for this project was for me to have my first experience with Java by using the Swing GUI framework and MySQL
+database.
+
+PS: The project was written mainly in the IntelliJ IDEA IDE, but the Swing GUI Forms were not used, instead, all 
+GUI components were handwritten.
 
 The project is still a work in progress:
 
@@ -13,7 +17,7 @@ The project is still a work in progress:
 - [x] Create the menu page
 - [x] Create the manager's pages
 - [x] Create the 'new sale' page
-- [ ] Create the 'search sale' page (work in progress)
+- [x] Create the 'search sale' page
 - [ ] Create settings int the menu for the user to tweak
 
 ---
@@ -34,3 +38,6 @@ The project is still a work in progress:
 
 ### New sale
 ![New sale page screenshot](images/screenshots/new_sale_page_screenshot.PNG)
+
+### Search sale
+![Search sale page screenshot](images/screenshots/search_sale_page_screenshot.PNG)

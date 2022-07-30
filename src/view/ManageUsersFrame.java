@@ -119,7 +119,7 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
         /***************************** Buttons *****************************/
         /****************************** Table ******************************/
 
-        userData = userDAO.getUsersTableData();
+        userData = userDAO.readUsersTableData();
         tableColumns = new String[]{"Username",
                 "Full name", "Password", "E-mail", "Access Level"};
         tableModel = new DefaultTableModel(userData, tableColumns);
@@ -224,7 +224,7 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
         } else {
             try {
                 if (userDAO.createUser(user)){
-                    userData = userDAO.getUsersTableData();
+                    userData = userDAO.readUsersTableData();
                     JOptionPane.showMessageDialog(null, "This user has been created successfully!",
                             "User created", JOptionPane.INFORMATION_MESSAGE);
                     emptyBoxes();
@@ -245,7 +245,7 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
         } else {
             try {
                 if (userDAO.updateUser(user)){
-                    userData = userDAO.getUsersTableData();
+                    userData = userDAO.readUsersTableData();
                     JOptionPane.showMessageDialog(null, "This user has been updated successfully!",
                             "User updated", JOptionPane.INFORMATION_MESSAGE);
                     emptyBoxes();
@@ -271,7 +271,7 @@ public class ManageUsersFrame extends JFrame implements ActionListener {
                 try {
                     String selectedUser = (String) userData[userDataTable.getSelectedRow()][0];
                     if (userDAO.deleteUser(selectedUser)) {
-                        userData = userDAO.getUsersTableData();
+                        userData = userDAO.readUsersTableData();
                         JOptionPane.showMessageDialog(null, "This user has been deleted successfully!",
                                 "User deleted", JOptionPane.INFORMATION_MESSAGE);
                         emptyBoxes();

@@ -37,6 +37,8 @@ INSERT INTO User VALUES("cacaminha", "Caio", "test123", "caioncaminha@gmail.com"
 INSERT INTO Product VALUES(null, "Cheeseburger", "Burger", "9,99");
 INSERT INTO Product VALUES(null, "Coca-Cola", "Drink", "3,99");
 
+INSERT INTO Sale VALUES(null, 9.99, "Alexandre", '2022-12-16');
+
 SELECT * FROM User;
 SELECT * FROM Product;
 SELECT * FROM Sale;

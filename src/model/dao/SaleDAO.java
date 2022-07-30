@@ -32,21 +32,6 @@ public class SaleDAO {
         return(insertedLines != 0);
     }
 
-    public Sale readSale(int id) throws SQLException {
-        query = "SELECT * FROM Sale WHERE id = ?";
-        statement = connection.prepareStatement(query);
-        statement.setInt(1, id);
-        result = statement.executeQuery();
-        if(result.next()) {
-            return new Sale(
-                    result.getInt(1),
-                    result.getFloat(2),
-                    result.getString(3),
-                    result.getString(4));
-        }
-        return null;
-    }
-
     public boolean updateSale(Sale sale) throws SQLException {
         query = "UPDATE Sale SET total_cost = ?, seller_username = ?, date = ? WHERE id = ?";
         statement = connection.prepareStatement(query);
@@ -66,12 +51,14 @@ public class SaleDAO {
         return(insertedLines != 0);
     }
 
-    public String[][] getSalesTableData() throws SQLException {
+    public String[][] readSalesTableData(String startDate, String endDate) throws SQLException {
         int rows = 0, columns = 4, aux = 0;
-        ResultSet resultRows = connection.prepareStatement("SELECT COUNT(*) FROM Sale").executeQuery();
+        String dateFilter = String.format(" WHERE date BETWEEN '%s' AND '%s'", startDate, endDate);
+
+        ResultSet resultRows = connection.prepareStatement("SELECT COUNT(*) FROM Sale" + dateFilter).executeQuery();
         if(resultRows.next()) rows = resultRows.getInt(1);
 
-        query = "SELECT * FROM Sale";
+        query = "SELECT * FROM Sale" + dateFilter;
         statement = connection.prepareStatement(query);
         result = statement.executeQuery();
         List<String> salesList = new ArrayList<>();

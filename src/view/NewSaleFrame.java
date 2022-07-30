@@ -93,7 +93,7 @@ public class NewSaleFrame extends JFrame implements ActionListener {
         sellerUsernameLabel.setFont(new Font("Calibri", Font.BOLD, 14));
         inputsPanel.add(sellerUsernameLabel);
 
-        attendantsArray = userDAO.getAllAttendants();
+        attendantsArray = userDAO.readAllAttendants();
 
         sellerUsernameComboBox = new JComboBox<>(attendantsArray);
         sellerUsernameComboBox.setPreferredSize(inputBoxDimension);
@@ -134,7 +134,7 @@ public class NewSaleFrame extends JFrame implements ActionListener {
         /***************************** Buttons *****************************/
         /************************** Products Table **************************/
 
-        productsData = productDAO.getProductsTableData();
+        productsData = productDAO.readProductsTableData();
         productsTableModel = new DefaultTableModel(productsData, tableColumns);
 
         productsTable = new JTable(productsTableModel) {

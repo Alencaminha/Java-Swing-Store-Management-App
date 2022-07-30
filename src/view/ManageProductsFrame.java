@@ -117,7 +117,7 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
         /***************************** Buttons *****************************/
         /****************************** Table ******************************/
 
-        productData = productDAO.getProductsTableData();
+        productData = productDAO.readProductsTableData();
         tableColumns = new String[]{"ID", "Name", "Category", "Price"};
         tableModel = new DefaultTableModel(productData, tableColumns);
 
@@ -218,7 +218,7 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
         } else {
             try {
                 if (productDAO.createProduct(product)){
-                    productData = productDAO.getProductsTableData();
+                    productData = productDAO.readProductsTableData();
                     JOptionPane.showMessageDialog(null, "This product has been created successfully!",
                             "Product created", JOptionPane.INFORMATION_MESSAGE);
                     emptyBoxes();
@@ -239,7 +239,7 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
         } else {
             try {
                 if (productDAO.updateProduct(product)){
-                    productData = productDAO.getProductsTableData();
+                    productData = productDAO.readProductsTableData();
                     JOptionPane.showMessageDialog(null, "This product has been updated successfully!",
                             "Product updated", JOptionPane.INFORMATION_MESSAGE);
                     emptyBoxes();
@@ -265,7 +265,7 @@ public class ManageProductsFrame extends JFrame implements ActionListener {
                 try {
                     int selectedProduct = Integer.parseInt((String) productData[productDataTable.getSelectedRow()][0]);
                     if (productDAO.deleteProduct(selectedProduct)) {
-                        productData = productDAO.getProductsTableData();
+                        productData = productDAO.readProductsTableData();
                         JOptionPane.showMessageDialog(null, "This product has been deleted successfully!",
                                 "Product deleted", JOptionPane.INFORMATION_MESSAGE);
                         emptyBoxes();
