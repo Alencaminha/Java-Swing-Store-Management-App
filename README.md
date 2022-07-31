@@ -9,6 +9,8 @@ database.
 PS: The project was written mainly in the IntelliJ IDEA IDE, but the Swing GUI Forms were not used, instead, all 
 GUI components were handwritten.
 
+PPS: The Mavem framework has been added to the project, still, no unit tests were developed for the current build.
+
 The project is still a work in progress:
 
 - [x] Create a GUI base with the Swing library/framework
